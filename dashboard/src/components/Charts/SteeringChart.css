@@ -1,0 +1,22 @@
+.steering-chart {
+  width: 100%;
+}
+
+.steering-chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.steering-chart .label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.steering-chart-empty .empty-message {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}

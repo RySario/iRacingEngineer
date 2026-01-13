@@ -35,7 +35,13 @@ function App() {
       </header>
 
       <main className="dashboard-grid">
-        {/* Row 1 */}
+        {/* Row 1 - Comparison Charts (Full Width) */}
+        <section className="panel comparison-panel">
+          <h2>Lap Comparison</h2>
+          <LapComparison />
+        </section>
+
+        {/* Row 2 */}
         <section className="panel telemetry-panel">
           <h2>Telemetry</h2>
           <Telemetry />
@@ -66,7 +72,7 @@ function App() {
           <SteeringWheel />
         </section>
 
-        {/* Row 2 */}
+        {/* Row 3 */}
         <section className="panel track-map-panel">
           <h2>Track Position</h2>
           <TrackMap />
@@ -82,15 +88,10 @@ function App() {
           <DriverGaps />
         </section>
 
-        {/* Row 3 */}
+        {/* Row 4 */}
         <section className="panel standings-panel">
           <h2>Standings</h2>
           <Standings />
-        </section>
-
-        <section className="panel comparison-panel">
-          <h2>Lap Comparison</h2>
-          <LapComparison />
         </section>
       </main>
     </div>

@@ -1,11 +1,11 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
-import './SpeedChart.css'
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts'
+import './SteeringChart.css'
 
-function SpeedChart({ lapData = [], compareLaps = [], title = 'Speed (km/h)' }) {
-  // Prepare data with speed in km/h
+function SteeringChart({ lapData = [], compareLaps = [], title = 'Steering Angle' }) {
+  // Prepare data with steering angle in degrees
   const chartData = lapData.map(sample => ({
     ...sample,
-    speed: (sample.speed || 0) * 3.6, // Convert m/s to km/h
+    steeringAngle: ((sample.steeringAngle || 0) * (180 / Math.PI)),
     distPct: (sample.distPct || 0) * 100, // Convert to percentage
   }))
 
@@ -13,15 +13,15 @@ function SpeedChart({ lapData = [], compareLaps = [], title = 'Speed (km/h)' }) 
 
   if (!chartData || chartData.length === 0) {
     return (
-      <div className="speed-chart-empty">
+      <div className="steering-chart-empty">
         <span className="label">{title}</span>
-        <span className="empty-message">Complete a lap to see speed trace</span>
+        <span className="empty-message">Complete a lap to see steering trace</span>
       </div>
     )
   }
 
   return (
-    <div className="speed-chart">
+    <div className="steering-chart">
       <span className="label">{title}</span>
       <ResponsiveContainer width="100%" height={200}>
         <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -36,8 +36,9 @@ function SpeedChart({ lapData = [], compareLaps = [], title = 'Speed (km/h)' }) 
           <YAxis
             stroke="var(--text-muted)"
             tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
-            domain={['auto', 'auto']}
+            domain={[-90, 90]}
           />
+          <ReferenceLine y={0} stroke="var(--text-muted)" strokeDasharray="3 3" opacity={0.5} />
           <Tooltip
             contentStyle={{
               backgroundColor: 'var(--panel-bg)',
@@ -45,13 +46,13 @@ function SpeedChart({ lapData = [], compareLaps = [], title = 'Speed (km/h)' }) 
               borderRadius: '4px',
               color: 'var(--text-primary)',
             }}
-            formatter={(value) => `${value.toFixed(1)} km/h`}
+            formatter={(value) => `${value.toFixed(1)}°`}
             labelFormatter={(label) => `${label.toFixed(1)}%`}
           />
           <Line
             type="monotone"
-            dataKey="speed"
-            stroke="var(--accent-blue)"
+            dataKey="steeringAngle"
+            stroke="var(--accent-green)"
             dot={false}
             strokeWidth={2}
             isAnimationActive={false}
@@ -59,14 +60,14 @@ function SpeedChart({ lapData = [], compareLaps = [], title = 'Speed (km/h)' }) 
           {compareLaps.map((compareLap, i) => {
             const compareData = compareLap.data.map(sample => ({
               distPct: (sample.distPct || 0) * 100,
-              speed: (sample.speed || 0) * 3.6,
+              steeringAngle: ((sample.steeringAngle || 0) * (180 / Math.PI)),
             }))
             return (
               <Line
                 key={compareLap.lap}
                 data={compareData}
                 type="monotone"
-                dataKey="speed"
+                dataKey="steeringAngle"
                 stroke={compareColors[i % compareColors.length]}
                 dot={false}
                 strokeWidth={1.5}
@@ -81,4 +82,4 @@ function SpeedChart({ lapData = [], compareLaps = [], title = 'Speed (km/h)' }) 
   )
 }
 
-export default SpeedChart
+export default SteeringChart
