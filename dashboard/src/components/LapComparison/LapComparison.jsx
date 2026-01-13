@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTelemetry } from '../../contexts/TelemetryContext'
 import SpeedChart from '../Charts/SpeedChart'
 import PedalChart from '../Charts/PedalChart'
+import SteeringChart from '../Charts/SteeringChart'
 import './LapComparison.css'
 
 function LapComparison() {
@@ -74,6 +75,11 @@ function LapComparison() {
           lapData={currentLapData}
           compareLaps={compareLapsData}
           title={`Pedals - Lap ${currentLap || 1}`}
+        />
+        <SteeringChart
+          lapData={currentLapData}
+          compareLaps={compareLapsData}
+          title={`Steering - Lap ${currentLap || 1}`}
         />
       </div>
 

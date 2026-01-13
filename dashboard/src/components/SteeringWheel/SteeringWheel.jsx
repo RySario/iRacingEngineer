@@ -8,8 +8,8 @@ function SteeringWheel() {
     return <div className="steering-empty">Waiting for data...</div>
   }
 
-  // Convert radians to degrees
-  const angleDegrees = ((telemetry.steeringAngle || 0) * (180 / Math.PI))
+  // Convert radians to degrees (negated for correct visual direction)
+  const angleDegrees = -((telemetry.steeringAngle || 0) * (180 / Math.PI))
 
   return (
     <div className="steering-wheel">
