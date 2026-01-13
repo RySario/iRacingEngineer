@@ -104,6 +104,7 @@ class WebSocketServer:
             # Check iRacing connection
             if not self.ir_client.is_connected:
                 if not self.ir_client.connect():
+                    print("Waiting for iRacing...")
                     await self.broadcast({
                         "type": "status",
                         "iracing_connected": False,
@@ -112,6 +113,7 @@ class WebSocketServer:
                     await asyncio.sleep(2)
                     continue
                 else:
+                    print("Connected to iRacing!")
                     await self.broadcast({
                         "type": "status",
                         "iracing_connected": True,
@@ -145,10 +147,18 @@ class WebSocketServer:
         self._running = True
 
         print(f"Starting iRacing Telemetry Server on ws://{WS_HOST}:{WS_PORT}")
+        print("Server is ready for connections...")
+        print()
 
-        async with websockets.serve(self.handler, WS_HOST, WS_PORT):
-            # Run telemetry broadcasting loop
-            await self.telemetry_loop()
+        try:
+            async with websockets.serve(self.handler, WS_HOST, WS_PORT):
+                # Run telemetry broadcasting loop in the background
+                await self.telemetry_loop()
+        except Exception as e:
+            print(f"Error starting server: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
 
     def stop(self):
         """Stop the server."""
