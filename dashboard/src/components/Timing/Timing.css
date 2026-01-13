@@ -1,0 +1,58 @@
+.timing {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.timing-empty {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+}
+
+.timing-current,
+.timing-reference,
+.timing-position {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.timing-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.timing-position .value-large {
+  color: var(--accent-yellow);
+}
+
+.lap-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.lap-num {
+  color: var(--text-muted);
+}
+
+.lap-time {
+  color: var(--text-primary);
+}

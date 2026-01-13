@@ -1,0 +1,123 @@
+.standings {
+  overflow-x: auto;
+}
+
+.standings-empty {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+}
+
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.standings-table th,
+.standings-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.standings-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.standings-table tbody tr:hover {
+  background-color: var(--bg-secondary);
+}
+
+.player-row {
+  background-color: rgba(68, 136, 255, 0.1) !important;
+  border-left: 3px solid var(--accent-blue);
+}
+
+.position {
+  width: 50px;
+}
+
+.pos-badge {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.pos-first {
+  background-color: #ffd700;
+  color: #000;
+}
+
+.pos-second {
+  background-color: #c0c0c0;
+  color: #000;
+}
+
+.pos-third {
+  background-color: #cd7f32;
+  color: #000;
+}
+
+.pos-other {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.car-number {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent-yellow);
+}
+
+.driver-name {
+  font-weight: 500;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.car-name {
+  color: var(--text-secondary);
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lap-time {
+  color: var(--text-primary);
+}
+
+.gap {
+  color: var(--text-secondary);
+}
+
+.laps {
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .standings-table {
+    font-size: 0.75rem;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 0.375rem 0.5rem;
+  }
+
+  .car-name {
+    display: none;
+  }
+}

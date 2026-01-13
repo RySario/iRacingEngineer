@@ -1,0 +1,119 @@
+.telemetry {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.telemetry-empty {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+}
+
+.telemetry-row {
+  display: flex;
+  gap: 2rem;
+}
+
+.telemetry-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.telemetry-item .value-large {
+  color: var(--text-primary);
+}
+
+.telemetry-item .unit {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.gear-value {
+  color: var(--accent-blue) !important;
+}
+
+/* Input bars */
+.telemetry-row.inputs {
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.input-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.input-bar .label {
+  width: 60px;
+}
+
+.bar-container {
+  flex: 1;
+  height: 12px;
+  background-color: var(--bg-secondary);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.05s ease-out;
+}
+
+.throttle .bar-fill {
+  background: linear-gradient(90deg, var(--accent-green), #00cc6a);
+}
+
+.brake .bar-fill {
+  background: linear-gradient(90deg, var(--accent-red), #cc3333);
+}
+
+/* Tire temps */
+.tire-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.tire-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.tire-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.tire-temps {
+  display: flex;
+  gap: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.tire-temp {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background-color: var(--bg-secondary);
+}
+
+.tire-temp.cold {
+  color: var(--accent-blue);
+}
+
+.tire-temp.optimal {
+  color: var(--accent-green);
+}
+
+.tire-temp.hot {
+  color: var(--accent-red);
+}

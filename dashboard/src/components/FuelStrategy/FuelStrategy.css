@@ -1,0 +1,89 @@
+.fuel-strategy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.fuel-empty {
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+}
+
+.fuel-level {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.fuel-gauge {
+  width: 24px;
+  height: 80px;
+  background-color: var(--bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.fuel-fill {
+  width: 100%;
+  transition: height 0.3s ease-out;
+  border-radius: 0 0 4px 4px;
+}
+
+.fuel-fill.high {
+  background: linear-gradient(to top, var(--accent-green), #00cc6a);
+}
+
+.fuel-fill.medium {
+  background: linear-gradient(to top, var(--accent-yellow), #ffaa00);
+}
+
+.fuel-fill.low {
+  background: linear-gradient(to top, var(--accent-red), #cc3333);
+}
+
+.fuel-values {
+  display: flex;
+  flex-direction: column;
+}
+
+.fuel-values .unit {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.fuel-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.fuel-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.finish-status {
+  padding: 0.5rem;
+  background-color: var(--bg-secondary);
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.pit-recommendation {
+  padding: 0.75rem;
+  background-color: rgba(255, 68, 68, 0.1);
+  border: 1px solid var(--accent-red);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pit-recommendation .note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
