@@ -2,16 +2,9 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import './SteeringChart.css'
 
 function SteeringChart({ lapData = [], compareLaps = [], title = 'Steering Angle' }) {
-  // Prepare data with steering angle in degrees
-  const chartData = lapData.map(sample => ({
-    ...sample,
-    steeringAngle: ((sample.steeringAngle || 0) * (180 / Math.PI)),
-    distPct: (sample.distPct || 0) * 100, // Convert to percentage
-  }))
-
   const compareColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7']
 
-  if (!chartData || chartData.length === 0) {
+  if (!lapData || lapData.length === 0) {
     return (
       <div className="steering-chart-empty">
         <span className="label">{title}</span>
@@ -20,11 +13,39 @@ function SteeringChart({ lapData = [], compareLaps = [], title = 'Steering Angle
     )
   }
 
+  // Create unified data structure with all laps
+  const unifiedData = lapData.map(sample => ({
+    distPct: (sample.distPct || 0) * 100,
+    currentLap: ((sample.steeringAngle || 0) * (180 / Math.PI)),
+  }))
+
+  // Add comparison lap data by interpolating at current lap's distance points
+  compareLaps.forEach((compareLap, lapIndex) => {
+    const compareKey = `lap${compareLap.lap}`
+
+    unifiedData.forEach((point) => {
+      // Find closest data point in comparison lap
+      const targetDist = point.distPct / 100
+      let closestSample = compareLap.data[0]
+      let minDiff = Math.abs((compareLap.data[0]?.distPct || 0) - targetDist)
+
+      for (const sample of compareLap.data) {
+        const diff = Math.abs((sample.distPct || 0) - targetDist)
+        if (diff < minDiff) {
+          minDiff = diff
+          closestSample = sample
+        }
+      }
+
+      point[compareKey] = ((closestSample?.steeringAngle || 0) * (180 / Math.PI))
+    })
+  })
+
   return (
     <div className="steering-chart">
       <span className="label">{title}</span>
       <ResponsiveContainer width="100%" height={200}>
-        <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+        <LineChart data={unifiedData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" opacity={0.3} />
           <XAxis
             dataKey="distPct"
@@ -46,36 +67,34 @@ function SteeringChart({ lapData = [], compareLaps = [], title = 'Steering Angle
               borderRadius: '4px',
               color: 'var(--text-primary)',
             }}
-            formatter={(value) => `${value.toFixed(1)}°`}
+            formatter={(value, name) => {
+              if (name === 'currentLap') return [`${value.toFixed(1)}°`, 'Current']
+              return [`${value.toFixed(1)}°`, name]
+            }}
             labelFormatter={(label) => `${label.toFixed(1)}%`}
           />
           <Line
             type="monotone"
-            dataKey="steeringAngle"
+            dataKey="currentLap"
             stroke="var(--accent-green)"
             dot={false}
             strokeWidth={2}
             isAnimationActive={false}
+            name="Current Lap"
           />
-          {compareLaps.map((compareLap, i) => {
-            const compareData = compareLap.data.map(sample => ({
-              distPct: (sample.distPct || 0) * 100,
-              steeringAngle: ((sample.steeringAngle || 0) * (180 / Math.PI)),
-            }))
-            return (
-              <Line
-                key={compareLap.lap}
-                data={compareData}
-                type="monotone"
-                dataKey="steeringAngle"
-                stroke={compareColors[i % compareColors.length]}
-                dot={false}
-                strokeWidth={1.5}
-                opacity={0.7}
-                isAnimationActive={false}
-              />
-            )
-          })}
+          {compareLaps.map((compareLap, i) => (
+            <Line
+              key={compareLap.lap}
+              type="monotone"
+              dataKey={`lap${compareLap.lap}`}
+              stroke={compareColors[i % compareColors.length]}
+              dot={false}
+              strokeWidth={1.5}
+              opacity={0.7}
+              isAnimationActive={false}
+              name={`Lap ${compareLap.lap}`}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
