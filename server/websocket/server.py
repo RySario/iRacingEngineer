@@ -8,8 +8,8 @@ from typing import Set
 import websockets
 from websockets.server import WebSocketServerProtocol
 
-from ..config import WS_HOST, WS_PORT, TELEMETRY_INTERVAL, SESSION_INTERVAL
-from ..sdk import IRacingClient
+from config import WS_HOST, WS_PORT, TELEMETRY_INTERVAL, SESSION_INTERVAL
+from sdk import IRacingClient
 
 
 class WebSocketServer:
