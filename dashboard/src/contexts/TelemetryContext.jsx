@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useMemo } from 'react'
+import { createContext, useContext, useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useWebSocket } from '../hooks/useWebSocket'
 
 const TelemetryContext = createContext(null)
@@ -8,6 +8,11 @@ export function TelemetryProvider({ children }) {
   const [session, setSession] = useState(null)
   const [iRacingConnected, setIRacingConnected] = useState(false)
   const [lapHistory, setLapHistory] = useState([])
+  const [lapTelemetryData, setLapTelemetryData] = useState({}) // Store telemetry samples per lap
+  const [isRecording, setIsRecording] = useState(false)
+  const [sectorTimes, setSectorTimes] = useState([])
+  const currentLapRef = useRef(0)
+  const lastSectorRef = useRef(0)
 
   const handleMessage = useCallback((data) => {
     switch (data.type) {
@@ -85,6 +90,58 @@ export function TelemetryProvider({ children }) {
     send({ type: 'request_session' })
   }, [send])
 
+  const toggleRecording = useCallback(() => {
+    const newState = !isRecording
+    setIsRecording(newState)
+    send({
+      type: newState ? 'enable_recording' : 'disable_recording'
+    })
+  }, [isRecording, send])
+
+  // Store telemetry samples for current lap for charting
+  useEffect(() => {
+    if (!telemetry || !telemetry.lap) return
+
+    const lap = telemetry.lap
+    const sample = {
+      distPct: telemetry.lapDistPct || 0,
+      speed: telemetry.speed || 0,
+      throttle: telemetry.throttle || 0,
+      brake: telemetry.brake || 0,
+      clutch: telemetry.clutch || 0,
+      steeringAngle: telemetry.steeringAngle || 0,
+      rpm: telemetry.rpm || 0,
+      gear: telemetry.gear || 0,
+    }
+
+    // Store sample for current lap
+    setLapTelemetryData(prev => {
+      const currentLapData = prev[telemetry.lap] || []
+
+      // Only add if we're progressing through the lap (avoid duplicates)
+      const lastSample = currentLapData[currentLapData.length - 1]
+      if (!lastSample || telemetry.lapDistPct > lastSample.distPct + 0.001) {
+        return {
+          ...prev,
+          [telemetry.lap]: [
+            ...(prev[telemetry.lap] || []).slice(-999), // Limit to ~1000 samples per lap
+            {
+              distPct: telemetry.lapDistPct,
+              speed: telemetry.speed,
+              throttle: telemetry.throttle,
+              brake: telemetry.brake,
+              clutch: telemetry.clutch,
+              rpm: telemetry.rpm,
+              gear: telemetry.gear,
+              steeringAngle: telemetry.steeringAngle,
+            }
+          ]
+        }
+      }
+      return prev
+    })
+  }, [telemetry])
+
   const value = {
     telemetry,
     session,
@@ -94,6 +151,10 @@ export function TelemetryProvider({ children }) {
     fuelPerLap,
     lapsRemaining,
     requestSession,
+    lapTelemetryData,
+    isRecording,
+    toggleRecording,
+    sectorTimes,
   }
 
   return (

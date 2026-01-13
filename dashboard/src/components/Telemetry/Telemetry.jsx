@@ -58,23 +58,41 @@ function Telemetry() {
       </div>
 
       <div className="telemetry-row tires">
-        <span className="label">Tire Temps (L/M/R)</span>
+        <span className="label">Tire Temps (I/M/O)</span>
         <div className="tire-grid">
-          {['LF', 'RF', 'LR', 'RR'].map((tire) => (
-            <div key={tire} className="tire-item">
-              <span className="tire-label">{tire}</span>
-              <div className="tire-temps">
-                {telemetry.tireTemps?.[tire]?.map((temp, i) => (
-                  <span
-                    key={i}
-                    className={`tire-temp ${getTempClass(temp)}`}
-                  >
-                    {temp?.toFixed(0) || '--'}
-                  </span>
-                )) || <span>--</span>}
+          {['LF', 'RF', 'LR', 'RR'].map((tire) => {
+            const temps = telemetry.tireTemps?.[tire]
+            if (!temps) return (
+              <div key={tire} className="tire-item">
+                <span className="tire-label">{tire}</span>
+                <div className="tire-temps">
+                  <span>--</span>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+
+            // Reorder temps to Inner/Middle/Outer
+            // Left tires (LF, LR): [L, C, R] -> [R, C, L] (Right=Inner, Center=Middle, Left=Outer)
+            // Right tires (RF, RR): [L, C, R] -> [L, C, R] (Left=Inner, Center=Middle, Right=Outer)
+            const isLeftTire = tire === 'LF' || tire === 'LR'
+            const orderedTemps = isLeftTire ? [temps[2], temps[1], temps[0]] : temps
+
+            return (
+              <div key={tire} className="tire-item">
+                <span className="tire-label">{tire}</span>
+                <div className="tire-temps">
+                  {orderedTemps.map((temp, i) => (
+                    <span
+                      key={i}
+                      className={`tire-temp ${getTempClass(temp)}`}
+                    >
+                      {temp?.toFixed(0) || '--'}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>
