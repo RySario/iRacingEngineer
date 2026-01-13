@@ -2,15 +2,9 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import './PedalChart.css'
 
 function PedalChart({ lapData = [], compareLaps = [], title = 'Pedal Inputs' }) {
-  // Prepare data with percentage values
-  const chartData = lapData.map(sample => ({
-    distPct: (sample.distPct || 0) * 100,
-    throttle: sample.throttle || 0,
-    brake: sample.brake || 0,
-    clutch: sample.clutch || 0,
-  }))
+  const compareColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24']
 
-  if (!chartData || chartData.length === 0) {
+  if (!lapData || lapData.length === 0) {
     return (
       <div className="pedal-chart-empty">
         <span className="label">{title}</span>
@@ -19,11 +13,43 @@ function PedalChart({ lapData = [], compareLaps = [], title = 'Pedal Inputs' }) 
     )
   }
 
+  // Create unified data structure with all laps
+  const unifiedData = lapData.map(sample => ({
+    distPct: (sample.distPct || 0) * 100,
+    throttle: sample.throttle || 0,
+    brake: sample.brake || 0,
+    clutch: sample.clutch || 0,
+  }))
+
+  // Add comparison lap data by interpolating at current lap's distance points
+  compareLaps.forEach((compareLap, lapIndex) => {
+    const throttleKey = `throttle_lap${compareLap.lap}`
+    const brakeKey = `brake_lap${compareLap.lap}`
+
+    unifiedData.forEach((point) => {
+      // Find closest data point in comparison lap
+      const targetDist = point.distPct / 100
+      let closestSample = compareLap.data[0]
+      let minDiff = Math.abs((compareLap.data[0]?.distPct || 0) - targetDist)
+
+      for (const sample of compareLap.data) {
+        const diff = Math.abs((sample.distPct || 0) - targetDist)
+        if (diff < minDiff) {
+          minDiff = diff
+          closestSample = sample
+        }
+      }
+
+      point[throttleKey] = closestSample?.throttle || 0
+      point[brakeKey] = closestSample?.brake || 0
+    })
+  })
+
   return (
     <div className="pedal-chart">
       <span className="label">{title}</span>
-      <ResponsiveContainer width="100%" height={150}>
-        <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+      <ResponsiveContainer width="100%" height={200}>
+        <LineChart data={unifiedData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" opacity={0.3} />
           <XAxis
             dataKey="distPct"
@@ -45,12 +71,23 @@ function PedalChart({ lapData = [], compareLaps = [], title = 'Pedal Inputs' }) 
               borderRadius: '4px',
               color: 'var(--text-primary)',
             }}
-            formatter={(value) => `${(value * 100).toFixed(0)}%`}
+            formatter={(value, name) => {
+              const displayValue = `${(value * 100).toFixed(0)}%`
+              if (name.includes('throttle')) return [displayValue, name.replace('throttle_', 'Throttle ')]
+              if (name.includes('brake')) return [displayValue, name.replace('brake_', 'Brake ')]
+              return [displayValue, name]
+            }}
             labelFormatter={(label) => `${label.toFixed(1)}%`}
           />
           <Legend
             wrapperStyle={{ color: 'var(--text-primary)', fontSize: '12px' }}
+            formatter={(value) => {
+              if (value.includes('throttle_lap')) return value.replace('throttle_lap', 'Throttle L')
+              if (value.includes('brake_lap')) return value.replace('brake_lap', 'Brake L')
+              return value
+            }}
           />
+          {/* Current lap */}
           <Line
             type="monotone"
             dataKey="throttle"
@@ -69,15 +106,35 @@ function PedalChart({ lapData = [], compareLaps = [], title = 'Pedal Inputs' }) 
             name="Brake"
             isAnimationActive={false}
           />
-          <Line
-            type="monotone"
-            dataKey="clutch"
-            stroke="var(--accent-yellow)"
-            dot={false}
-            strokeWidth={1.5}
-            name="Clutch"
-            isAnimationActive={false}
-          />
+          {/* Comparison laps - throttle */}
+          {compareLaps.map((compareLap, i) => (
+            <Line
+              key={`throttle_${compareLap.lap}`}
+              type="monotone"
+              dataKey={`throttle_lap${compareLap.lap}`}
+              stroke={compareColors[i % compareColors.length]}
+              dot={false}
+              strokeWidth={1.5}
+              opacity={0.5}
+              isAnimationActive={false}
+              name={`throttle_lap${compareLap.lap}`}
+              strokeDasharray="3 3"
+            />
+          ))}
+          {/* Comparison laps - brake */}
+          {compareLaps.map((compareLap, i) => (
+            <Line
+              key={`brake_${compareLap.lap}`}
+              type="monotone"
+              dataKey={`brake_lap${compareLap.lap}`}
+              stroke={compareColors[i % compareColors.length]}
+              dot={false}
+              strokeWidth={1.5}
+              opacity={0.7}
+              isAnimationActive={false}
+              name={`brake_lap${compareLap.lap}`}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
