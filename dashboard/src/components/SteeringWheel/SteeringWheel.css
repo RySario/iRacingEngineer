@@ -1,0 +1,27 @@
+.steering-wheel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.steering-visual {
+  width: 100px;
+  height: 100px;
+}
+
+.steering-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.steering-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.steering-empty {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}

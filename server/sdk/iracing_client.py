@@ -95,6 +95,35 @@ class IRacingClient:
 
                 # Incidents
                 "incidents": self.ir["PlayerCarMyIncidentCount"] or 0,
+
+                # Damage data
+                "damage": {
+                    "engineWarnings": self.ir["EngineWarnings"] or 0,
+                    "wheels": {
+                        "LF": abs(self.ir["LFshockDefl"] or 0),
+                        "RF": abs(self.ir["RFshockDefl"] or 0),
+                        "LR": abs(self.ir["LRshockDefl"] or 0),
+                        "RR": abs(self.ir["RRshockDefl"] or 0),
+                    },
+                    "towTime": self.ir["PlayerCarTowTime"] or 0,
+                },
+
+                # Weather data
+                "weather": {
+                    "type": self.ir["WeatherType"] or 0,
+                    "skies": self.ir["Skies"] or 0,
+                    "windSpeed": self.ir["WindVel"] or 0,
+                    "windDir": self.ir["WindDir"] or 0,
+                    "humidity": self.ir["RelativeHumidity"] or 0,
+                    "airDensity": self.ir["AirDensity"] or 0,
+                    "fogLevel": self.ir["FogLevel"] or 0,
+                },
+
+                # Sector and position data
+                "sector": self.ir["PlayerCarClassPosition"] or 0,
+                "carIdxLapDistPct": list(self.ir["CarIdxLapDistPct"] or []),
+                "carIdxPosition": list(self.ir["CarIdxPosition"] or []),
+                "carIdxEstTime": list(self.ir["CarIdxEstTime"] or []),
             }
             return telemetry
         except Exception:

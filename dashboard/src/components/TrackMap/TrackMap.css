@@ -1,0 +1,23 @@
+.track-map {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.track-map-svg {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+}
+
+.track-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.track-map-empty {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}

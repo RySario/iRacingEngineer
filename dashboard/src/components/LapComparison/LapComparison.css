@@ -1,0 +1,85 @@
+.lap-comparison {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.lap-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.selector-label {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.lap-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.lap-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border: 2px solid var(--border-color);
+  background: var(--panel-bg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lap-chip:hover {
+  border-color: var(--accent-blue);
+  background: rgba(68, 136, 255, 0.1);
+}
+
+.lap-chip.selected {
+  border-color: var(--accent-blue);
+  background: rgba(68, 136, 255, 0.2);
+}
+
+.lap-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.lap-time {
+  font-size: 0.875rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+}
+
+.lap-chip.selected .lap-time {
+  color: var(--accent-blue);
+}
+
+.no-laps {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.comparison-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.selected-info {
+  padding: 0.5rem;
+  border-radius: 4px;
+  background: rgba(68, 136, 255, 0.1);
+  border: 1px solid var(--accent-blue);
+}
+
+.info-text {
+  font-size: 0.875rem;
+  color: var(--accent-blue);
+  font-weight: 500;
+}

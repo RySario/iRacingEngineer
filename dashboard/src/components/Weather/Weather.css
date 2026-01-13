@@ -1,0 +1,40 @@
+.weather {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.weather-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.weather-icon {
+  font-size: 2rem;
+}
+
+.weather-condition {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.weather-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.weather-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.weather-empty {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
