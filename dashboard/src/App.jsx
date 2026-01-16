@@ -11,6 +11,7 @@ import TrackMap from './components/TrackMap/TrackMap'
 import SectorTimes from './components/SectorTimes/SectorTimes'
 import DriverGaps from './components/DriverGaps/DriverGaps'
 import LapComparison from './components/LapComparison/LapComparison'
+import SessionNotes from './components/SessionNotes/SessionNotes'
 
 function App() {
   const { connectionStatus, iRacingConnected, session } = useTelemetry()
@@ -92,6 +93,12 @@ function App() {
         <section className="panel standings-panel">
           <h2>Standings</h2>
           <Standings />
+        </section>
+
+        {/* Row 5 - Session Notes */}
+        <section className="panel notes-panel">
+          <h2>Session Notes</h2>
+          <SessionNotes />
         </section>
       </main>
     </div>

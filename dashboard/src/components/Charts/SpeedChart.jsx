@@ -1,7 +1,7 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import './SpeedChart.css'
 
-function SpeedChart({ lapData = [], compareLaps = [], title = 'Speed (km/h)' }) {
+function SpeedChart({ lapData = [], compareLaps = [], title = 'Speed (km/h)', onFullscreen, isFullscreen = false }) {
   const compareColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7']
 
   if (!lapData || lapData.length === 0) {
@@ -43,9 +43,9 @@ function SpeedChart({ lapData = [], compareLaps = [], title = 'Speed (km/h)' }) 
   })
 
   return (
-    <div className="speed-chart">
+    <div className="speed-chart" onClick={onFullscreen} style={{ cursor: onFullscreen ? 'pointer' : 'default', flex: isFullscreen ? 1 : 'none', display: 'flex', flexDirection: 'column' }}>
       <span className="label">{title}</span>
-      <ResponsiveContainer width="100%" height={200}>
+      <ResponsiveContainer width="100%" height={isFullscreen ? '100%' : 200}>
         <LineChart data={unifiedData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" opacity={0.3} />
           <XAxis
