@@ -11,8 +11,10 @@ export function TelemetryProvider({ children }) {
   const [lapTelemetryData, setLapTelemetryData] = useState({}) // Store telemetry samples per lap
   const [isRecording, setIsRecording] = useState(false)
   const [sectorTimes, setSectorTimes] = useState([])
+  const [trackMapData, setTrackMapData] = useState([]) // Track position samples for map
   const currentLapRef = useRef(0)
   const lastSectorRef = useRef(0)
+  const trackMapCompleteRef = useRef(false)
 
   const handleMessage = useCallback((data) => {
     switch (data.type) {
@@ -140,6 +142,29 @@ export function TelemetryProvider({ children }) {
       }
       return prev
     })
+
+    // Collect track map data (only during first complete lap after session start)
+    if (telemetry.trackPosition && !trackMapCompleteRef.current) {
+      const { lat, lon } = telemetry.trackPosition
+
+      // Add position sample
+      setTrackMapData(prev => {
+        const lastPoint = prev[prev.length - 1]
+
+        // Only add if we've moved significantly or it's the first point
+        if (!lastPoint || Math.abs(lat - lastPoint.lat) > 0.00001 || Math.abs(lon - lastPoint.lon) > 0.00001) {
+          const newData = [...prev, { lat, lon, distPct: telemetry.lapDistPct }]
+
+          // Mark as complete when we have a full lap
+          if (newData.length > 100 && telemetry.lapDistPct < 0.05 && prev.length > 0 && prev[prev.length - 1].distPct > 0.95) {
+            trackMapCompleteRef.current = true
+          }
+
+          return newData.slice(-1000) // Limit to 1000 points
+        }
+        return prev
+      })
+    }
   }, [telemetry])
 
   const value = {
@@ -155,6 +180,7 @@ export function TelemetryProvider({ children }) {
     isRecording,
     toggleRecording,
     sectorTimes,
+    trackMapData,
   }
 
   return (

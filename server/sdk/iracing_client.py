@@ -10,6 +10,13 @@ class IRacingClient:
     def __init__(self):
         self.ir = irsdk.IRSDK()
         self._connected = False
+        # Sector tracking
+        self._sector_thresholds = [0.33, 0.66, 1.0]  # 3 sectors at 33%, 66%, 100%
+        self._current_sector = 0
+        self._sector_start_time = None
+        self._sector_times = [None, None, None]
+        self._last_lap = 0
+        self._best_sector_times = [None, None, None]
 
     @property
     def is_connected(self) -> bool:
@@ -32,6 +39,43 @@ class IRacingClient:
         self.ir.shutdown()
         self._connected = False
 
+    def _update_sector_times(self, lap_dist_pct: float, current_lap: int, current_lap_time: float):
+        """Update sector times based on current position.
+
+        Args:
+            lap_dist_pct: Current lap distance percentage (0-1)
+            current_lap: Current lap number
+            current_lap_time: Current lap time in seconds
+        """
+        # Reset on new lap
+        if current_lap != self._last_lap:
+            self._last_lap = current_lap
+            self._current_sector = 0
+            self._sector_start_time = current_lap_time
+            self._sector_times = [None, None, None]
+
+        # Check if we've crossed into a new sector
+        if self._current_sector < len(self._sector_thresholds):
+            threshold = self._sector_thresholds[self._current_sector]
+
+            # Initialize sector start time if needed
+            if self._sector_start_time is None:
+                self._sector_start_time = current_lap_time
+
+            # Check if we've passed the threshold
+            if lap_dist_pct >= threshold:
+                sector_time = current_lap_time - self._sector_start_time
+                self._sector_times[self._current_sector] = sector_time
+
+                # Update best sector time
+                if (self._best_sector_times[self._current_sector] is None or
+                    sector_time < self._best_sector_times[self._current_sector]):
+                    self._best_sector_times[self._current_sector] = sector_time
+
+                # Move to next sector
+                self._current_sector += 1
+                self._sector_start_time = current_lap_time
+
     def get_telemetry(self) -> Optional[dict]:
         """Get current telemetry data.
 
@@ -45,6 +89,14 @@ class IRacingClient:
         self.ir.freeze_var_buffer_latest()
 
         try:
+            # Get core values first
+            lap_dist_pct = self.ir["LapDistPct"] or 0
+            current_lap = self.ir["Lap"] or 0
+            current_lap_time = self.ir["LapCurrentLapTime"] or 0
+
+            # Update sector times
+            self._update_sector_times(lap_dist_pct, current_lap, current_lap_time)
+
             telemetry = {
                 # Speed and engine
                 "speed": self.ir["Speed"] or 0,  # m/s
@@ -62,17 +114,24 @@ class IRacingClient:
                 "fuelPercent": self.ir["FuelLevelPct"] or 0,
 
                 # Lap timing
-                "lapCurrentTime": self.ir["LapCurrentLapTime"] or 0,
+                "lapCurrentTime": current_lap_time,
                 "lapBestTime": self.ir["LapBestLapTime"] or 0,
                 "lapLastTime": self.ir["LapLastLapTime"] or 0,
                 "lapDeltaToBest": self.ir["LapDeltaToBestLap"] or 0,
                 "lapDeltaToOptimal": self.ir["LapDeltaToOptimalLap"] or 0,
 
                 # Position
-                "lap": self.ir["Lap"] or 0,
-                "lapDistPct": self.ir["LapDistPct"] or 0,
+                "lap": current_lap,
+                "lapDistPct": lap_dist_pct,
                 "position": self.ir["PlayerCarPosition"] or 0,
                 "positionInClass": self.ir["PlayerCarClassPosition"] or 0,
+
+                # Sector times
+                "sectorTimes": {
+                    "current": list(self._sector_times),
+                    "best": list(self._best_sector_times),
+                    "currentSector": self._current_sector,
+                },
 
                 # Tire temps (inner, middle, outer for each tire)
                 "tireTemps": {
@@ -124,6 +183,13 @@ class IRacingClient:
                 "carIdxLapDistPct": list(self.ir["CarIdxLapDistPct"] or []),
                 "carIdxPosition": list(self.ir["CarIdxPosition"] or []),
                 "carIdxEstTime": list(self.ir["CarIdxEstTime"] or []),
+
+                # Track position for map rendering
+                "trackPosition": {
+                    "lat": self.ir["Lat"] or 0,
+                    "lon": self.ir["Lon"] or 0,
+                    "yawNorth": self.ir["YawNorth"] or 0,
+                },
             }
             return telemetry
         except Exception:

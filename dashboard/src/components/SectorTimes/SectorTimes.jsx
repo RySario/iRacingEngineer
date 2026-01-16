@@ -4,17 +4,39 @@ import './SectorTimes.css'
 function SectorTimes() {
   const { telemetry } = useTelemetry()
 
-  if (!telemetry) {
+  if (!telemetry || !telemetry.sectorTimes) {
     return <div className="sector-times-empty">Waiting for data...</div>
   }
 
-  // TODO: Implement proper sector time tracking
-  // For now, showing placeholder structure
-  const sectors = [
-    { number: 1, time: null, status: 'pending' },
-    { number: 2, time: null, status: 'pending' },
-    { number: 3, time: null, status: 'pending' },
-  ]
+  const { sectorTimes } = telemetry
+  const currentSectorTimes = sectorTimes.current || [null, null, null]
+  const bestSectorTimes = sectorTimes.best || [null, null, null]
+  const currentSector = sectorTimes.currentSector || 0
+
+  // Create sectors array with status
+  const sectors = currentSectorTimes.map((time, index) => {
+    let status = 'pending'
+
+    if (time !== null && bestSectorTimes[index] !== null) {
+      if (time === bestSectorTimes[index]) {
+        status = 'purple'  // Personal best
+      } else if (time < bestSectorTimes[index] * 1.01) {
+        status = 'green'   // Close to best
+      } else if (time < bestSectorTimes[index] * 1.03) {
+        status = 'yellow'  // Within 3%
+      } else {
+        status = 'red'     // Slower
+      }
+    } else if (time !== null) {
+      status = 'purple'  // First sector time is best
+    }
+
+    return {
+      number: index + 1,
+      time: time,
+      status: status,
+    }
+  })
 
   const getSectorClass = (status) => {
     switch (status) {

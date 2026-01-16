@@ -8,6 +8,7 @@ import './LapComparison.css'
 function LapComparison() {
   const { lapHistory, lapTelemetryData, telemetry } = useTelemetry()
   const [selectedLaps, setSelectedLaps] = useState([])
+  const [fullscreenChart, setFullscreenChart] = useState(null)
 
   const toggleLap = (lapNum) => {
     setSelectedLaps(prev => {
@@ -70,18 +71,53 @@ function LapComparison() {
           lapData={currentLapData}
           compareLaps={compareLapsData}
           title={`Speed - Lap ${currentLap || 1}`}
+          onFullscreen={() => setFullscreenChart('speed')}
         />
         <PedalChart
           lapData={currentLapData}
           compareLaps={compareLapsData}
           title={`Pedals - Lap ${currentLap || 1}`}
+          onFullscreen={() => setFullscreenChart('pedal')}
         />
         <SteeringChart
           lapData={currentLapData}
           compareLaps={compareLapsData}
           title={`Steering - Lap ${currentLap || 1}`}
+          onFullscreen={() => setFullscreenChart('steering')}
         />
       </div>
+
+      {fullscreenChart && (
+        <div className="fullscreen-modal" onClick={() => setFullscreenChart(null)}>
+          <div className="fullscreen-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={() => setFullscreenChart(null)}>✕</button>
+            {fullscreenChart === 'speed' && (
+              <SpeedChart
+                lapData={currentLapData}
+                compareLaps={compareLapsData}
+                title={`Speed - Lap ${currentLap || 1}`}
+                isFullscreen={true}
+              />
+            )}
+            {fullscreenChart === 'pedal' && (
+              <PedalChart
+                lapData={currentLapData}
+                compareLaps={compareLapsData}
+                title={`Pedals - Lap ${currentLap || 1}`}
+                isFullscreen={true}
+              />
+            )}
+            {fullscreenChart === 'steering' && (
+              <SteeringChart
+                lapData={currentLapData}
+                compareLaps={compareLapsData}
+                title={`Steering - Lap ${currentLap || 1}`}
+                isFullscreen={true}
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       {selectedLaps.length > 0 && (
         <div className="selected-info">

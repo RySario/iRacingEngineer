@@ -148,6 +148,12 @@ body {
   grid-row: 4;
 }
 
+/* Row 5 - Session Notes */
+.notes-panel {
+  grid-column: 1 / 7;
+  grid-row: 5;
+}
+
 /* Utility classes */
 .mono {
   font-family: var(--font-mono);
@@ -217,7 +223,8 @@ body {
     grid-row: auto;
   }
 
-  .standings-panel {
+  .standings-panel,
+  .notes-panel {
     grid-column: 1 / 4;
     grid-row: auto;
   }
@@ -234,7 +241,8 @@ body {
   }
 
   .telemetry-panel,
-  .standings-panel {
+  .standings-panel,
+  .notes-panel {
     grid-column: 1 / 3;
   }
 
@@ -266,7 +274,8 @@ body {
   .track-map-panel,
   .sector-panel,
   .gaps-panel,
-  .standings-panel {
+  .standings-panel,
+  .notes-panel {
     grid-column: 1;
     grid-row: auto;
   }
