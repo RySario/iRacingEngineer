@@ -53,10 +53,12 @@ function PedalChart({ lapData = [], compareLaps = [], title = 'Pedal Inputs' }) 
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" opacity={0.3} />
           <XAxis
             dataKey="distPct"
+            type="number"
             domain={[0, 100]}
             tickFormatter={(v) => `${v.toFixed(0)}%`}
             stroke="var(--text-muted)"
             tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
+            allowDataOverflow={false}
           />
           <YAxis
             domain={[0, 1]}
